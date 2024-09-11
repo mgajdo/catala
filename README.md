@@ -1,60 +1,6 @@
-<div align="center">
-  <img src="https://github.com/CatalaLang/catala/raw/master/doc/images/logo.png" alt="Catala logo" width="120"/>
-  <h3 align="center">
-	<big>Catala</big>
-  </h3>
-  <p align="center">
-   <a href="https://catala-lang.org/ocaml_docs/"><strong>Explore the docs »</strong></a>
-   <br/>
-   <a href="https://catala-lang.org/en/examples/tutorial">View Tutorial</a>
-   •
-   <a href="https://github.com/CatalaLang/catala/issues">Report Bug</a>
-   •
-   <a href="https://github.com/CatalaLang/catala/blob/master/CONTRIBUTING.md">Contribute</a>
-   •
-   <a href="https://zulip.catala-lang.org/">Join Zulip Chat</a>
-  </p>
+# Catala
 
-![CI][ci-link] [![Opam][opam-link]](https://opam.ocaml.org/packages/catala/) [![Licence][licence-link]](https://www.apache.org/licenses/LICENSE-2.0) ![Tag][tag-link] ![LoC][loc-link] ![Language][language-link] [![Issues][issues-link]](https://github.com/CatalaLang/catala/issues) [![Contributors][contributors-link]](https://github.com/CatalaLang/catala/graphs/contributors) [![Activity][activity-link]](https://github.com/CatalaLang/catala/pulse)
-
-Catala is a domain-specific language for deriving
-faithful-by-construction algorithms from legislative texts. To learn quickly
-about the language and its features, you can jump right to the official
-[Catala tutorial](https://catala-lang.org/en/examples/tutorial).
-You can join the Catala community on [Zulip][chat-link]!
-
-</div>
-
-<br>
-
-<details>
-  <summary>Table of Contents</summary>
-
-<!-- vim-markdown-toc GitLab -->
-
-* [Concepts](#concepts)
-* [Getting started](#getting-started)
-* [Building and installation](#building-and-installation)
-* [Usage](#usage)
-  * [Catala](#catala)
-  * [Clerk](#clerk)
-* [Documentation](#documentation)
-  * [Syntax cheat sheet](#syntax-cheat-sheet)
-  * [Formal semantics](#formal-semantics)
-  * [Compiler documentation](#compiler-documentation)
-* [Examples](#examples)
-* [API](#api)
-* [Contributing](#contributing)
-* [Test suite](#test-suite)
-* [License](#license)
-* [Limitations and disclaimer](#limitations-and-disclaimer)
-* [Pierre Catala](#pierre-catala)
-
-<!-- vim-markdown-toc -->
-
-</details>
-
-## Concepts
+## Introduction
 
 Catala is a programming language adapted for socio-fiscal legislative literate
 programming. By annotating each line of the legislative text with its meaning
@@ -67,20 +13,12 @@ cases, etc. that contain information about the socio-fiscal mechanism that
 you want to implement. Then, you can proceed to annotate the text article by
 article, in your favorite text editor :
 
-<div align="center">
-<img src="https://github.com/CatalaLang/catala/raw/master/doc/images/ScreenShotVSCode.png" alt="Screenshot" height="350"/>
-</div>
-
 Once your code is complete and tested, you can use the Catala
 compiler to produce a lawyer-readable PDF version of your
 implementation. The Catala language has been specially designed
 in collaboration with law professionals to ensure that the code
 can be reviewed and certified correct by the domain experts, which
 are in this case lawyers and not programmers.
-
-<div align="center">
-<img src="https://github.com/CatalaLang/catala/raw/master/doc/images/CatalaScreenShot.png" alt="Screenshot" height="350"/>
-</div>
 
 The Catala language is special because its logical structure mimics
 the logical structure of the law. Indeed, the core concept of
@@ -91,55 +29,247 @@ The Catala language is the only programming language to our knowledge that
 embeds default logic as a first-class feature, which is why it is the only
 language perfectly adapted to literate legislative programming.
 
-## Getting started
+The language is named after Pierre Catala, a professor of law who
+pionneered the French legaltech by creating a computer database of law cases,
+Juris-Data. The research group that he led in the late 1960s, the
+Centre d’études et de traitement de l’information juridique (CETIJ),
+has also influenced the creation by state conselor Lucien Mehl of the
+Centre de recherches et développement en informatique juridique (CENIJ),
+which eventually transformed into the entity managing the LegiFrance website,
+acting as the public service of legislative documentation.
 
-To get started, the best place is the [tutorial](https://catala-lang.org/en/examples/tutorial)
-of the language. A [French version](https://catala-lang.org/fr/examples/tutoriel)
-is also available but might be out of sync with the latest language features.
+## Installation
 
-> **Note:** bleeding-edge version
->
-> If you are interested in the latest development version, pre-built artifacts
-> including binaries and API documentation can be found at
-> https://catalalang.github.io/catala
+### Docker
 
-## Building and installation
+Basic installation of the compialer vie Dockerfile provided in the 'catala' repository. Uses the examples from 'catala-examples' as a mounted volume. 
+
+```bash
+git clone https://github.com/CatalaLang/catala.git && cd catala
+mkdir examples && cd exmplaes && git clone https://github.com/CatalaLang/catala-examples.git
+cd ..
+docker build . -t catala
+docker run -it --name catala -v $(pwd)/playground:/home/ocaml/catala/playground catala
+```
+
+The generated binaries will be in `~/catala/_build/install/default`. Get started by running:
+
+```bash
+./_build/install/default/bin/catala --help
+```
+
+Some features of the Catala repository also require the following executables to be present. On debian, arch or apline-based distributions, the above command should already take care of them.
+
+    groff python3 pip rsync colordiff nodejs npm
+
+**Warning**: the `make dependencies` command does not include the `z3`
+dependency required to enable the proof platform feature of Catala. If you wish
+to enable support for the `Proof` command of the Catala compiler, you should
+instead execute `make dependencies-with-z3` prior to building the compiler.
+
+The Python dependencies are installed inside a local virtual environment
+(`venv`). To use it, for example to run Python code generated by Catala, you
+should run the following command once in every new shell session:
+
+    . _python_venv/bin/activate
+
+The **Makefile** contains useful information about the intended use and dependencies used.
+
+### Local opam installation
+
+You can skip this step if you used the *Docker* option above, it is already taken
+care of.
 
 Catala is available as an [opam package](https://opam.ocaml.org/packages/catala/)!
 If opam is installed on your machine, simply execute:
 
     opam install catala
 
-To get the cutting-edge, latest version of Catala, you
-can also do
-
-    opam pin add catala --dev-repo
-
 However, if you wish to get the latest developments of the compiler, you probably
-want to compile it from the sources of this repository or use nix. For that, see
-[the dedicated readme](INSTALL.md).
+want to compile it from the sources of this repository:
+
+    opam install ./
+
+To uninstall, use
+
+    opam remove ./
+
+If you are using opam on bare-metal, first install all the packages Catala depends on with:
+
+    make dependencies
+
+This should ensure everything is set up for developing on the Catala compiler!
+
+The project is distributed as a Dune artifact. Use standard dune commands to build
+and install the library. Makefile aliases are here to help you: running
+
+    make build
+
+builds the compiler from its OCaml sources.
+
+## Development cycle
+
+### Syntax
+
+1. Look into the directory 'playground/src'. 
+2. In there, create a master source file 'FILE1.catala_en' (depending on your language) that will be the root of your Catala program.
+3. (optional) We can split up your example into multiple files. 'FILE1.catala_en' must only contain a list of modules:
+
+```ocaml
+# Master file
+
+> Include: FILE2.catala_en
+```
+
+Inside each file we can write legislative texts we want to use as a reference (Markdown style, e.g. # headings) as well as code blocks (```catala``` ) or Catala metadata (```catala-metadata```; While all the code sections are equivalent in terms of execution, you can mark some as "metadata" so that they are printed differently on lawyer-facing documents) and modules ('> Module X'), imports ('>Using X as Y`) and external files ('>Include: foo.vatala_en')
+
+```catala
+# In code sections, comments start with #
+scope Foo:
+  <your code goes here>
+```
+
+```catala-metadata
+declaration structure FooBar:
+  data foo content boolean
+  data bar content money
+
+<your structure/enumeration/scope declarations goes here>
+```
+
+You can also live-test the programs you wrote by feeding them to the interpreter; this will also type-check the programs, which is useful for debugging them.
+
+[Syntax](https://catalalang.github.io/catala/syntax.pdf)
+
+Examples:
+- [Tutorial](https://catala-lang.org/en/examples/tutorial)
+- [US Tax Code](https://github.com/CatalaLang/catala-examples/tree/master/us_tax_code)
+
+### Compiler
+
+The installed catala executable inside this Docker container is a binary. Get started by running '--help' (Quit the manpage by typing 'q'.)
+
+```bash
+./_build/install/default/bin/catala --help
+```
+
+The [Catala Compiler manpage](https://catala-lang.org/en/doc/catala) contains all available commands and options. The basic command structure is:
+
+```bash
+catala [COMMAND] <FILE.catala_en>  [OPTION]… 
+```
+
+Our 'entrypoint' for the executable is (replace 'catala' with our custom entrypoint):
+
+```bash
+./_build/install/default/bin/catala 
+```
 
 ## Usage
 
-### Catala
+If you want to deploy a Catala program inside an application written in programming language X. The Catala compiler will translate the source Catala program into X, yielding a new .x source code file. This .x file will export **functions** corresponding to the **scopes** of the original Catala program. You can then reuse those exported functions in your application written in X.
 
-Use `catala --help` if you have installed it to get more information about the
-command line options available. The man page is also [available
-online](https://catala-lang.org/en/doc/catala). To get the development version
-of the help, run `make help_catala` after `make build`. The `catala` binary
-corresponds to the Catala compiler.
+The catala compiler[1] is structured around many intermediate representations connected by successive translations:
+1. The surface representation: from source code to abstract syntax tree (lexing [sedlex]; parsing [menhir], with custom error messages). This representation can also be weaved into literate programming outputs using the literate programming modules:
+    - HTML: The 'Literate.Html' module weaves the source code and the legislative text together into a document that law professionals can understand.
+    - LaTex: The 'Literate.Latex' module weaves the source code and the legislative text together into a document that law professionals can understand.
+2. The desugared representation: from abstract syntax tree to desugared representation. The legislative text has been discarded and all the definitions of each variables have been collected in the same place. 
+3. The scope language (Scopelang): Produces an ordered list of the scope definitions compatible with the computation order. All the graph computations are done using the Ocamlgraph library. It also checks that within a scope, there is no computational circular dependency between the variables of the scope.
+4. The default calculus (Dcalc): Where they typing is performed (deduce the types of variables, expressions and functions from programs written in an entirely untyped style) - Scopes have been lowered into regular functions, and enums and structs have been lowered to sum and product types. 
+    - Interpreter
+5. The lambda calculus (Lcalc)
+    - OCaml: Lcalc.To_ocaml Formats a lambda calculus program into a valid OCaml program
+6. The statement calculus (Scalc)
+    - Python: The 'Scalc.To_python' module formats a lambda calculus program into a valid Python program
 
-The top-level `Makefile` contains a lot of useful targets to run. To display
-them, use
+The Catala *runtimes* documentation is available here:
+- Runtime_ocaml.Runtime: The OCaml runtime.
+- Runtime_jsoo.Runtime: A js_of_ocaml wrapper around the Runtime_ocaml.Runtime. This plugin generates a js_of_ocaml wrapper from the lcalc representation of a Catala program. First it generates the OCaml module, then an '_api_web.ml' module which contains all the class types and conversion functions between the OCaml types and their corresponding JS objects. At the end the module exposes all methods in a JS lib <module_name> Lib.
 
-        make help
+Other plugins:
+- JSON schema generator: This plugin generates a JSON schema corresponding to a scope of a Catala program.
 
-### Plugin backends
+[Documentation](https://catala-lang.org/ocaml_docs/)
 
-While the compiler has some builtin backends for Catala (Python, Ocaml, etc.),
-it is also possible to add a custom backend to the Catala compiler without
-having to modify its source code. This plugin solution relies on dynamic
-linking: see [the dedicated README](compiler/plugins/README.md).
+[1] A *compiler* is a program whose sole job is to translate from one language into another. The target language does not have to be an executable language. 
+
+### Example commands
+
+Runs the interpreter on the Catala program, executing the scope specified by the -s option:
+
+```bash
+catala Interpret -s TwoBracketsTaxComputation examples/test/test.catala_en
+```
+
+Generates an OCaml translation of the Catala program., specifying the output drectory:
+
+```bash
+catala Ocaml -o examples/target/test_ocaml.ml examples/test/test.catala_en
+```
+
+Catala plugin for generating web APIs. It generates OCaml code before the associated [js_of_ocaml] wrapper:
+
+```bash
+catala api_web [OPTION]… FILE
+```
+
+### Example projects
+
+This repository presents a working example of how Catala could be distributed and deployed inside existing applications: [French Law Libraries](https://github.com/CatalaLang/french-law/blob/master/README.md)
+
+Prebuilt artefacts are available here:
+- [OCaml](https://catalalang.github.io/catala/french-law_ocaml.tar.gz)
+- [npm](https://catalalang.github.io/catala/french-law_npm.tar.gz): [Example usage](https://github.com/CatalaLang/french-law/blob/master/js/README.md)
+    1. 'npm install french-law_npm.tar.gz' will install the package and add to our 'node_modules' directory as well as 'package.json'.
+    2. To run we can 'node js/examples.js'. The french-law npm package exposes:
+        - an event manager: exposes 3 methods
+        - a list of sub-libraries: "Allocations familiales" and "aides logement"
+    3. Date values are encoded to JS string according the ISO8601 format: 'YYYY-MM-DD'.
+- [Python](https://catalalang.github.io/catala/french_law_python.tar.gz):
+    1. Python version expected to run the Python code is above 3.6.
+    2. For the commands noted below to run, you are expected to setup a virtual Python environment
+    3. Then activate the environment (needs to be done every time you open a new shell session):
+    ```bash
+    . _python_venv/bin/activate
+    ```
+    4. The src/ folder contains the Python files generated by the Catala compiler. The Python files generated by the Catala compiler depends on the catala.runtime package, whose source code can be found in runtimes/python/catala from the root of the Catala repository.
+    5. To use the algorithms of this library, you can take a look at the example provided in main.py. All the algorithms are centralized with wrappers in api.py, as it is very important internally to wrap all of the input parameters using src/catala.py conversion functions.
+
+## Syntax highlighting
+
+The Catala language also comes with syntax highlighting to
+ease program development. The syntax highlighting is done, among other
+techniques, with the [Iro](https://eeyo.io/iro/) compiler that allows
+writing the syntax only once, and then export it to formats
+understood by various IDE.
+
+### VSCode
+
+To get Catala syntax highlighting in VSCode, simply enter from
+the root of the repository, depending on the language you want to use :
+
+    make vscode_en
+
+You can now reload VSCode and check that you have syntax highlighting on any `.catala` file.
+
+### Pygments
+
+Pygments is a Python-based versatile lexer for various programming languages. To
+use a version of Pygments augmented with the Catala plugin, simply enter from
+the root of the repository
+
+    make pygments
+
+This will setup a Python virtual environment ("venv"), and install the syntax
+highlighting plugins that allow Pygments to handle Catala files. Those are
+defined in `syntax_highlighting/XX/pygments/`.
+
+Pygments is used for instance by the `minted` LaTeX package. To make sure it is
+available, you need to "activate" the python venv each time using:
+
+    . _python_venv/bin/activate
+
+## Miscellaneous
 
 ### Clerk
 
@@ -156,86 +286,3 @@ Catleg is a command line utility providing useful integration with
 [LégiFrance](https://legifrance.gouv.fr), the official repository of French
 legal documentation. See the [decidated
 repository](https://github.com/catalaLang/catleg) for more information.
-
-## Documentation
-
-### Syntax cheat sheet
-
-A complete and handy reference of the Catala syntax can be found in the [cheat
-sheet](https://catalalang.github.io/catala/syntax.pdf) (for French and English
-versions of the syntax).
-
-### Formal semantics
-
-To audit the formal proof of the partial certification of the Catala compiler,
-see [the dedicated readme](doc/formalization/README.md).
-
-### Compiler documentation
-
-The documentation is accessible online, both for the [latest release](https://catala-lang.org/ocaml_docs/) and [bleeding-edge version](https://catalalang.github.io/catala/api-doc/).
-
-
-It is otherwise generated from the compiler source code using
-`dune` and `odoc`. Run
-
-    make doc
-
-to generate the documentation, then open the `doc/odoc.html` file in any browser.
-
-## Examples
-
-To explore the different programs written in Catala, see [the dedicated
-readme](https://github.com/CatalaLang/catala-examples/blob/master/README.md).
-
-## API
-
-To know how to use the code generated by the Catala compiler in your favorite
-programming language, head to the [readme of the French law
-library](https://github.com/CatalaLang/french-law/blob/master/README.md). The
-corresponding pre-built examples are also
-[available](https://catalalang.github.io/catala/).
-
-## Contributing
-
-To know how you can contribute to the project, see
-[the dedicated readme](CONTRIBUTING.md).
-
-## Test suite
-
-To know how to run or improve the Catala reference test suite,
-see [the dedicated readme](tests/README.md).
-
-## License
-
-The compiler and all the code contained in this repository is released under
-the [Apache license (version 2)](LICENSE.txt) unless another license is explicited
-for a sub-directory.
-
-## Limitations and disclaimer
-
-Catala is a research project from Inria, the French National
-Research Institute for Computer Science. The compiler is yet
-unstable and lacks some of its features.
-
-## Pierre Catala
-
-The language is named after Pierre Catala, a professor of law who
-pionneered the French legaltech by creating a computer database of law cases,
-Juris-Data. The research group that he led in the late 1960s, the
-Centre d’études et de traitement de l’information juridique (CETIJ),
-has also influenced the creation by state conselor Lucien Mehl of the
-Centre de recherches et développement en informatique juridique (CENIJ),
-which eventually transformed into the entity managing the LegiFrance website,
-acting as the public service of legislative documentation.
-
-[chat-image]: https://img.shields.io/badge/zulip-join_chat-blue.svg?style=social&logo=zulip&color=5c75a2
-[chat-link]: https://zulip.catala-lang.org/
-[ci-link]: https://github.com/catalalang/catala/actions/workflows/harness.yml/badge.svg
-[licence-link]: https://img.shields.io/github/license/catalalang/catala
-[tag-link]: https://img.shields.io/github/v/tag/catalalang/catala
-[loc-link]: https://img.shields.io/tokei/lines/github/catalalang/catala
-[issues-link]: https://img.shields.io/github/issues/catalalang/catala
-[opam-link]: https://img.shields.io/badge/Package-opam-orange?logo=OCaml&link=https://opam.ocaml.org/packages/catala/
-[language-link]: https://img.shields.io/github/languages/top/catalalang/catala
-[contributors-link]: https://img.shields.io/github/contributors/catalalang/catala
-[activity-link]: https://img.shields.io/github/commit-activity/m/catalalang/catala

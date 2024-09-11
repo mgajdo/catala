@@ -26,6 +26,15 @@ RUN opam --cli=2.2 switch create . --deps-only --with-test --with-doc && \
 #
 FROM dev-build-context
 
+# Switch to root user to install additional dependencies
+USER root
+
+# Install additional dependencies: groff, python3, pip, rsync, colordiff, nodejs, npm
+RUN apk update && apk add groff python3 py3-pip rsync colordiff nodejs npm
+
+# Switch back to the opam user
+USER ocaml
+
 # Prepare extra local dependencies (doing this first allows caching)
 ADD --chown=ocaml:ocaml runtimes/python/pyproject.toml runtimes/python/pyproject.toml
 ADD --chown=ocaml:ocaml Makefile .
